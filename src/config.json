@@ -1,0 +1,6 @@
+{
+  "ApplyToApps": true,
+  "ApplyToSystem": true,
+  "Inverted": false,
+  "PollSeconds": 15
+}
