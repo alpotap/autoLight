@@ -45,10 +45,7 @@ Write-Host "Installed to $installDir"
 $action = New-ScheduledTaskAction -Execute (Join-Path $PSHOME 'powershell.exe') `
     -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$target`""
 
-$logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
-$recoveryTrigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) `
-    -RepetitionInterval (New-TimeSpan -Minutes 5) `
-    -RepetitionDuration (New-TimeSpan -Days 3650)
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 
 $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
@@ -64,7 +61,7 @@ $settings = New-ScheduledTaskSettingsSet `
 $principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" `
     -LogonType Interactive -RunLevel Limited
 
-Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger @($logonTrigger, $recoveryTrigger) `
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger `
     -Settings $settings -Principal $principal -Description 'Light theme on AC power, dark theme on battery.' -Force | Out-Null
 
 Write-Host "Scheduled task '$TaskName' registered (starts at logon)."
